@@ -6,7 +6,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { DesignerSchemaInspector } from './DesignerSchemaInspector';
-import { exportWorkspaceToInvoiceTemplateAst } from '../ast/workspaceAst';
+import { exportWorkspaceToTemplateAst } from '../ast/workspaceAst';
 import { DesignCanvas } from '../canvas/DesignCanvas';
 import { useInvoiceDesignerStore } from '../state/designerStore';
 import type { DesignerNode } from '../state/designerStore';
@@ -322,7 +322,7 @@ describe('TableEditorWidget (schema widget integration)', () => {
       expect((updated.props as any)?.metadata?.collectionBindingKey).toBe('items.grouped');
     });
 
-    const ast = exportWorkspaceToInvoiceTemplateAst(useInvoiceDesignerStore.getState().exportWorkspace());
+    const ast = exportWorkspaceToTemplateAst(useInvoiceDesignerStore.getState().exportWorkspace());
     const table = findDynamicTableNode(ast.layout);
     expect(table?.type).toBe('dynamic-table');
     if (!table || table.type !== 'dynamic-table') return;

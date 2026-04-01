@@ -3,6 +3,7 @@ import { getClientLogoUrl } from '@alga-psa/formatting/avatarUtils';
 import type { Knex } from 'knex';
 
 import Quote from '../../models/quote';
+import { fetchTenantParty } from './tenantPartyAdapter';
 
 const asTrimmedString = (value: unknown): string => (typeof value === 'string' ? value.trim() : '');
 
@@ -169,70 +170,8 @@ async function fetchContactParty(
   };
 }
 
-async function fetchTenantParty(
-  knexOrTrx: Knex | Knex.Transaction,
-  tenant: string
-): Promise<QuoteViewModelParty | null> {
-  const tenantClient = await knexOrTrx('tenant_companies as tc')
-    .join('clients as c', function joinClients() {
-      this.on('tc.client_id', '=', 'c.client_id').andOn('tc.tenant', '=', 'c.tenant');
-    })
-    .leftJoin('client_locations as cl', function joinLocations() {
-      this.on('c.client_id', '=', 'cl.client_id')
-        .andOn('c.tenant', '=', 'cl.tenant')
-        .andOn(function preferredLocation() {
-          this.on('cl.is_billing_address', '=', knexOrTrx.raw('true'))
-            .orOn('cl.is_default', '=', knexOrTrx.raw('true'));
-        });
-    })
-    .select(
-      'tc.client_id',
-      'c.client_name',
-      'cl.phone',
-      'cl.email',
-      'cl.address_line1',
-      'cl.address_line2',
-      'cl.address_line3',
-      'cl.city',
-      'cl.state_province',
-      'cl.postal_code',
-      'cl.country_name'
-    )
-    .where({ 'tc.tenant': tenant, 'tc.is_default': true })
-    .whereNull('tc.deleted_at')
-    .orderByRaw('cl.is_billing_address DESC NULLS LAST, cl.is_default DESC NULLS LAST')
-    .first<Record<string, unknown>>();
-
-  if (tenantClient?.client_id) {
-    const logoUrl = await getClientLogoUrl(String(tenantClient.client_id), tenant).catch(() => null);
-
-    return {
-      name: asTrimmedString(tenantClient.client_name) || 'Your Company',
-      address: buildAddress(tenantClient),
-      email: asTrimmedString(tenantClient.email) || null,
-      phone: asTrimmedString(tenantClient.phone) || null,
-      logo_url: logoUrl || null,
-    };
-  }
-
-  const tenantRecord = await knexOrTrx('tenants')
-    .select('client_name')
-    .where({ tenant })
-    .first<Record<string, unknown>>();
-
-  const tenantName = asTrimmedString(tenantRecord?.client_name);
-  if (!tenantName) {
-    return null;
-  }
-
-  return {
-    name: tenantName,
-    address: null,
-    email: null,
-    phone: null,
-    logo_url: null,
-  };
-}
+// fetchTenantParty is now imported from './tenantPartyAdapter' and used directly
+// as its return type (TenantParty) is compatible with QuoteViewModelParty.
 
 async function resolveAcceptedByName(
   knexOrTrx: Knex | Knex.Transaction,

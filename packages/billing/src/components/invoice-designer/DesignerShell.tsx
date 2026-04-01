@@ -22,8 +22,8 @@ import { restrictToWindowEdges, createSnapModifier } from '@dnd-kit/modifiers';
 import {
   clampInvoiceMarginMm,
   listInvoicePaperPresets,
-  resolveInvoiceTemplatePrintSettings,
-  type InvoiceTemplatePrintSettings,
+  resolveTemplatePrintSettings,
+  type TemplatePrintSettings,
 } from '@alga-psa/types';
 import { ComponentPalette } from './palette/ComponentPalette';
 import { DesignCanvas } from './canvas/DesignCanvas';
@@ -487,10 +487,10 @@ const resolveDesignerShellPrintSettings = (nodes: DesignerNode[]) => {
   const pageLayout = pageNode ? getNodeLayout(pageNode) : undefined;
   const pageStyle = pageNode ? getNodeStyle(pageNode) : undefined;
 
-  return resolveInvoiceTemplatePrintSettings({
+  return resolveTemplatePrintSettings({
     printSettings:
       typeof documentMetadata.printSettings === 'object' && documentMetadata.printSettings !== null
-        ? (documentMetadata.printSettings as Partial<InvoiceTemplatePrintSettings>)
+        ? (documentMetadata.printSettings as Partial<TemplatePrintSettings>)
         : undefined,
     pageWidthPx: pageNode?.size.width ?? parsePxLength(pageStyle?.width),
     pageHeightPx: pageNode?.size.height ?? parsePxLength(pageStyle?.height),
@@ -1736,7 +1736,7 @@ export const DesignerShell: React.FC = () => {
 
   const handlePaperPresetChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     applyPrintSettings({
-      paperPreset: event.target.value as InvoiceTemplatePrintSettings['paperPreset'],
+      paperPreset: event.target.value as TemplatePrintSettings['paperPreset'],
     });
   };
 
@@ -1990,7 +1990,7 @@ export const DesignerShell: React.FC = () => {
                   <CustomSelect
                     id="designer-paper-preset-select"
                     value={currentPrintSettings.paperPreset}
-                    onValueChange={(value) => applyPrintSettings({ paperPreset: value as InvoiceTemplatePrintSettings['paperPreset'] })}
+                    onValueChange={(value) => applyPrintSettings({ paperPreset: value as TemplatePrintSettings['paperPreset'] })}
                     options={listInvoicePaperPresets().map((preset) => ({
                       value: preset.id,
                       label: preset.label,

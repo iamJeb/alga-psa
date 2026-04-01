@@ -1,6 +1,6 @@
-import type { InvoiceTemplateAst } from '@alga-psa/types';
+import type { TemplateAst } from '@alga-psa/types';
 
-type QuoteTemplateBindings = NonNullable<InvoiceTemplateAst['bindings']>;
+type QuoteTemplateBindings = NonNullable<TemplateAst['bindings']>;
 type QuoteTemplateValueBindings = NonNullable<QuoteTemplateBindings['values']>;
 type QuoteTemplateCollectionBindings = NonNullable<QuoteTemplateBindings['collections']>;
 

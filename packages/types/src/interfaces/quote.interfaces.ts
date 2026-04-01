@@ -1,7 +1,7 @@
 import { TenantEntity } from './index';
 import type { ISO8601String } from '../lib/temporal';
 import type { DiscountType, TaxSource } from './invoice.interfaces';
-import type { InvoiceTemplateAst } from '../lib/invoice-template-ast';
+import type { TemplateAst } from '../lib/invoice-template-ast';
 
 export type QuoteStatus =
   | 'draft'
@@ -217,7 +217,7 @@ export interface IQuoteDocumentTemplate extends TenantEntity {
   template_id: string;
   name: string;
   version: number;
-  templateAst?: InvoiceTemplateAst | null;
+  templateAst?: TemplateAst | null;
   isStandard?: boolean;
   is_default?: boolean;
   isTenantDefault?: boolean;
